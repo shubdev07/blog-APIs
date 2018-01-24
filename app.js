@@ -14,7 +14,7 @@ mongoose.connect("mongodb://localhost:27017/blogApp", err => {
 //require all custom modules
 var BlogModel = require("./models/blogModel");
 
-//create an intance of express
+//create an instance of express
 var app = express();
 
 //configure necessary middlewares
@@ -99,6 +99,47 @@ app.get("/blog/author/:author", (req, res) => {
 });
 
 //API to edit a blog
+app.post("/blog/:id/edit", (req, res) => {
+  BlogModel.findOneAndUpdate(
+    { _id: req.params.id },
+    { $set: req.body },
+    { new: true },
+    (err, doc) => {
+      if (err) {
+        return res.status(500).send(err);
+      }
+      if (!doc) {
+        return res.status(404).json({
+          message: "No such blog exists."
+        });
+      } else {
+        return res.status(200).json({
+          message: "Blog updated successfully.",
+          data: doc
+        });
+      }
+    }
+  );
+});
+
+//API to delete a blog
+app.get("/blog/:id/remove", (req, res) => {
+  BlogModel.findByIdAndRemove({ _id: req.params.id }, (err, doc) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    if (!doc) {
+      return res.status(404).json({
+        message: "No such blog exists."
+      });
+    } else {
+      return res.status(200).json({
+        message: "Blog deleted successfully.",
+        data: doc
+      });
+    }
+  });
+});
 
 //start the server
 app.listen(3000, () =>
