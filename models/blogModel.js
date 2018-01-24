@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
+//demo Schema of a blog
 var blogModel = new Schema(
   {
     title: {
@@ -20,7 +21,7 @@ var blogModel = new Schema(
     author: {
       type: String,
       trim: true,
-      default: "Anonymous",
+      default: "anonymous",
       lowercase: true
     }
   },

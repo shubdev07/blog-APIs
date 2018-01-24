@@ -21,6 +21,17 @@ var app = express();
 app.use(bodyParser.json({ limit: "10mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
+// Application level Middleware to log user data
+app.use(function(req, res, next) {
+
+    console.log("Logging started");
+    console.log(`User requested ${req.originalUrl}`);
+    console.log(`User's IP adress: ${req.ip}`);
+    console.log("Logging ended");
+    next();
+});
+
+
 app.get("/", (req, res) => {
   res.send("Welcome to the root route");
 });
@@ -141,7 +152,22 @@ app.get("/blog/:id/remove", (req, res) => {
   });
 });
 
-//start the server
+
+app.get("*", (req, res, next) => {
+  res.status = 404;
+  next("Error Occured");
+});
+
+//error handling middleware
+app.use((err, req, res, next) => {
+  if (res.status === 404) {
+    res.send("Such route doesn't exist");
+  } else {
+    res.send(err);
+  }
+});
+
+//listen on a port
 app.listen(3000, () =>
   console.log("Express server is listening at port 3000!")
 );
